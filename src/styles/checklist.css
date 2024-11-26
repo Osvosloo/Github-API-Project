@@ -1,0 +1,19 @@
+/* Ensure the container uses flexbox with column direction */
+.checklist-container {
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  width: 100%; /* Full width */
+  margin-bottom: 10px;
+}
+
+/* Each checkbox item should be a block element */
+.checklist-container div {
+  display: block; /* Ensure each item is a block */
+  margin-bottom: 5px; /* Space between items */
+  color: black;
+}
+
+/* Prevent items from stretching */
+.checklist-container input[type="checkbox"] {
+  margin-right: 8px; /* Space between checkbox and label */
+}
