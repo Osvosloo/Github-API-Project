@@ -9,7 +9,7 @@ body {
   max-width: 600px;
   margin: auto;
   padding: 20px;
-  background: rgb(189, 100, 100);
+  background: rgb(255, 255, 255);
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   display: flex;
@@ -68,4 +68,8 @@ p {
 
 strong {
   color: #333;
+}
+
+li {
+  color: black;
 }
