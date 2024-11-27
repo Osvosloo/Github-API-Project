@@ -1,8 +1,8 @@
-// src/Checklist.tsx
+// note, currently not using this component
 import React, { useState } from "react";
 import "../styles/checklist.css";
 import { fetchUser } from "../api/githubAPI";
-import { GitHubUser } from "../types"; // Import the GitHubUser  type
+import { GitHubUser } from "../types"; 
 
 interface ChecklistProps {
   selectedFields: string[];
@@ -13,18 +13,18 @@ const Checklist: React.FC<ChecklistProps> = ({
   selectedFields,
   onFieldToggle,
 }) => {
-  const [userData, setUserData] = useState<GitHubUser | null>(null); // Change type to GitHubUser  | null
-  const [username, setUsername] = useState<string>(""); // State for username input
+  const [userData, setUserData] = useState<GitHubUser | null>(null);
+  const [username, setUsername] = useState<string>(""); 
 
   const handleLoadInformation = async () => {
     if (username) {
       try {
-        const data = await fetchUser(username); // Fetch user data with the input username
+        const data = await fetchUser(username); 
         console.log(data);
-        setUserData(data); // Set the user data
+        setUserData(data); 
       } catch (error) {
         console.error("Error fetching user data:", error);
-        setUserData(null); // Handle errors (e.g., user not found)
+        setUserData(null); 
       }
     }
   };
@@ -32,7 +32,7 @@ const Checklist: React.FC<ChecklistProps> = ({
   const renderChecklist = () => {
     if (!userData) return null;
 
-    const fields = Object.keys(userData); // Dynamically get fields from userData
+    const fields = Object.keys(userData); 
 
     return (
       <div style={{ maxHeight: "100px", overflowY: "scroll" }}>
@@ -41,7 +41,7 @@ const Checklist: React.FC<ChecklistProps> = ({
             <input
               type="checkbox"
               checked={selectedFields.includes(field)}
-              onChange={() => onFieldToggle(field)} // Use the prop function to toggle
+              onChange={() => onFieldToggle(field)} 
             />
             <label>{field}</label>
           </div>
