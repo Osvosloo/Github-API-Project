@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GitHubUser , GitHubCommit } from '../types'; // Assuming you have a type for GitHub commits
+import { GitHubUser , GitHubCommit } from '../types'; 
 
 export const fetchUser  = async (username: string): Promise<GitHubUser > => {
   const response = await axios.get<GitHubUser >(`https://api.github.com/users/${username}`);
