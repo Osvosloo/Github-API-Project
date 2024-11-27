@@ -1,16 +1,16 @@
 .commit-list {
-  list-style-type: none; /* Remove default list styles */
-  padding: 0; /* Remove padding */
-  display: flex; /* Use flexbox for layout */
-  flex-wrap: wrap; /* Allow wrapping of cards */
-  gap: 16px; /* Space between cards */
+  list-style-type: none; 
+  padding: 0; 
+  display: flex;
+  flex-wrap: wrap; 
+  gap: 16px; 
 }
 
 .commit-card {
-  background-color: #f9f9f9; /* Light background for cards */
-  border: 1px solid #ddd; /* Light border */
-  border-radius: 8px; /* Rounded corners */
-  padding: 16px; /* Inner padding */
+  background-color: #f9f9f9;
+  border: 1px solid #ddd; 
+  border-radius: 8px; 
+  padding: 16px; 
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   flex: 1 1 calc(30% - 16px);
   min-width: 250px;
@@ -18,11 +18,11 @@
 }
 
 .commit-card:hover {
-  transform: scale(1.02); /* Scale up on hover */
+  transform: scale(1.02); 
 }
 
 .commit-content {
-  text-align: left; /* Align text to the left */
+  text-align: left; 
 }
 
 .commit-author,
