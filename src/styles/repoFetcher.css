@@ -11,10 +11,10 @@
   border: 1px solid #ddd; /* Light border */
   border-radius: 8px; /* Rounded corners */
   padding: 16px; /* Inner padding */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  flex: 1 1 calc(30% - 16px); /* Responsive card width */
-  min-width: 250px; /* Minimum width for cards */
-  transition: transform 0.2s; /* Smooth scaling on hover */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex: 1 1 calc(30% - 16px);
+  min-width: 250px;
+  transition: transform 0.2s;
 }
 
 .commit-card:hover {
@@ -27,7 +27,7 @@
 
 .commit-author,
 .commit-date {
-  font-size: 0.9em; /* Slightly smaller font size */
-  color: #555; /* Darker grey for author and date */
-  margin: 4px 0; /* Vertical margin */
+  font-size: 0.9em;
+  color: #3d3d3d;
+  margin: 4px 0;
 }

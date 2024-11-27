@@ -48,7 +48,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
           height: 100%;
           overflow: auto;
           background-color: rgb(0,0,0);
-          background-color: rgba(0,0,0,0.4);
+          background-color: grey;
         }
         .modal-content {
           border-radius: 10px;
