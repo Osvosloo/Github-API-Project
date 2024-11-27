@@ -12,6 +12,7 @@ body {
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 input[type="text"] {
@@ -23,6 +24,11 @@ input[type="text"] {
   max-width: 200px;
 }
 
+@media (min-width: 600px) {
+  .input-row {
+    flex-direction: row; /* Change to row for larger screens */
+  }
+}
 .button-container {
   display: flex;
   justify-content: left;
