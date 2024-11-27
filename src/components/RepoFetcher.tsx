@@ -31,7 +31,7 @@ const GitHubRepoFetcher: React.FC = () => {
   // Load favorites from localStorage when the component mounts
   useEffect(() => {
     const storedFavorites = localStorage.getItem("favorites");
-    // const cleartest = JSON.parse('');
+  
     if (storedFavorites) {
       try {
         const parsedFavorites = JSON.parse(storedFavorites);
@@ -186,11 +186,19 @@ const GitHubRepoFetcher: React.FC = () => {
         {showAllFavorites
           ? allFavoriteCommits.map((commit) => (
               <li key={commit.sha} className="commit-card">
-                <strong>{commit.commit.message}</strong>
-                <p className="commit-author">By: {commit.commit.author.name}</p>
-                <p className="commit-date">
-                  Date: {new Date(commit.commit.author.date).toLocaleString()}
-                </p>
+                <a
+                  href={`https://github.com/${commit.repository.owner.login}/${commit.repository.name}/commit/${commit.sha}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <strong>{commit.commit.message}</strong>
+                  <p className="commit-author">
+                    By: {commit.commit.author.name}
+                  </p>
+                  <p className="commit-date">
+                    Date: {new Date(commit.commit.author.date).toLocaleString()}
+                  </p>
+                </a>
               </li>
             ))
           : showFavorites
