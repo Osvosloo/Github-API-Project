@@ -6,14 +6,14 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 interface CommitCardProps {
-  commitMessage: string; // Changed to commitMessage for clarity
-  authorName: string; // Added authorName prop
+  commitMessage: string;
+  authorName: string;
   isFavorite: boolean;
   onToggleFavorite: (sha: string) => void;
   owner: string;
   repo: string;
   sha: string;
-  date: string; // Changed to string for consistency with API response
+  date: string;
 }
 
 const CommitCard: React.FC<CommitCardProps> = ({
@@ -38,7 +38,7 @@ const CommitCard: React.FC<CommitCardProps> = ({
               position: "absolute",
               top: "17px",
               right: "10px",
-              color: isFavorite ? "gold" : "gray",
+              color: isFavorite ? "black" : "gray",
             }}
           />
         </div>

@@ -1,28 +1,27 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import SearchModal from "./SearchModal";
-import CommitCard from "./CommitCard"; // Import the CommitCard component
+import CommitCard from "./CommitCard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faMagnifyingGlass,
   faStar as solidStar,
 } from "@fortawesome/free-solid-svg-icons";
-// import { faStar as regularStar } from "@fortawesome/free-regular-svg-icons";
 import "../styles/repoFetcher.css";
+import { ClipLoader } from "react-spinners";
+import { GitHubCommit, favorite } from "../types";
 
 const GitHubRepoFetcher: React.FC = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [owner, setOwner] = useState<string>("");
   const [repo, setRepo] = useState<string>("");
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [commits, setCommits] = useState<any[]>([]);
+  const [commits, setCommits] = useState<GitHubCommit[]>([]);
   const [error, setError] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [favorites, setFavorites] = useState<any[]>([]); // Use any for now, can be refined later
+  const [favorites, setFavorites] = useState<favorite[]>([]); // Use any for now, can be refined later
   const [showFavorites, setShowFavorites] = useState<boolean>(false);
   const [showAllFavorites, setShowAllFavorites] = useState<boolean>(false);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [allFavoriteCommits, setAllFavoriteCommits] = useState<any[]>([]);
+  const [allFavoriteCommits, setAllFavoriteCommits] = useState<favorite[]>([]);
 
   useEffect(() => {
     const storedFavorites = localStorage.getItem("favorites");
@@ -37,6 +36,8 @@ const GitHubRepoFetcher: React.FC = () => {
         }
       } catch (error) {
         console.error("Error parsing favorites from localStorage", error);
+        alert(`Error parsing favorites from localStorage ${error}`);
+
         setFavorites([]);
       }
     }
@@ -48,10 +49,15 @@ const GitHubRepoFetcher: React.FC = () => {
   };
 
   const fetchCommits = async () => {
+    if (!owner || !repo) {
+      alert("Fill in both inputs");
+      return;
+    }
     setCommits([]);
     setError("");
     setShowFavorites(false);
     setShowAllFavorites(false);
+    setIsLoading(true);
     try {
       if (owner && repo) {
         const response = await axios.get(
@@ -60,7 +66,10 @@ const GitHubRepoFetcher: React.FC = () => {
         setCommits(response.data);
       }
     } catch (err) {
+      alert(`error: ${err}`);
       setError(`error: ${err}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -113,6 +122,9 @@ const GitHubRepoFetcher: React.FC = () => {
 
   const toggleShowFavorites = () => {
     console.log(favorites);
+    if (!owner || !repo) {
+      alert("Please fill in both inputs");
+    }
     setShowAllFavorites(false);
     if (owner && repo) {
       setShowFavorites((prev) => !prev);
@@ -122,6 +134,8 @@ const GitHubRepoFetcher: React.FC = () => {
   const fetchAllFavoriteCommits = async () => {
     setShowFavorites(false);
     const allCommits = [];
+    setIsLoading(true);
+
     for (const favorite of favorites) {
       const { owner, repo, sha } = favorite;
       if (owner && repo && sha) {
@@ -132,16 +146,21 @@ const GitHubRepoFetcher: React.FC = () => {
           const { commit } = response.data;
           allCommits.push({
             sha,
+            owner: owner,
+            repo: repo,
             commitMessage: commit.message,
             authorName: commit.author.name,
             date: commit.author.date,
           });
         } catch (err) {
+          alert(err);
           console.error(`Failed to fetch commit with SHA: ${sha}`, err);
+          break;
         }
       }
     }
     setAllFavoriteCommits(allCommits);
+    setIsLoading(false);
   };
 
   const toggleShowAllFavorites = () => {
@@ -160,16 +179,19 @@ const GitHubRepoFetcher: React.FC = () => {
           placeholder="Owner"
           value={owner}
           onChange={(e) => setOwner(e.target.value)}
+          required
         />
         <input
           type="text"
           placeholder="Repository"
           value={repo}
           onChange={(e) => setRepo(e.target.value)}
+          required
         />
       </div>
+
       <div className="button-container">
-        <button onClick={fetchCommits}>Fetch All Commits</button>
+        <button onClick={fetchCommits}>Fetch Commits</button>
         <button
           onClick={openModal}
           style={{ display: "flex", alignItems: "center" }}
@@ -187,59 +209,75 @@ const GitHubRepoFetcher: React.FC = () => {
       </div>
       {error && <p style={{ color: "red" }}>{error}</p>}
 
-      <ul className="commit-list">
-        {showAllFavorites
-          ? allFavoriteCommits.map((commit) => (
-              <CommitCard
-                key={commit.sha}
-                commitMessage={commit.commitMessage}
-                authorName={commit.authorName}
-                isFavorite={true}
-                onToggleFavorite={toggleFavorite}
-                owner={owner}
-                repo={repo}
-                sha={commit.sha}
-                date={commit.date}
-              />
-            ))
-          : showFavorites
-          ? favorites.map(({ sha }) => {
-              const favoriteCommit = commits.find(
-                (commit) => commit.sha === sha
-              );
-              return favoriteCommit ? (
-                <CommitCard
-                  key={favoriteCommit.sha}
-                  commitMessage={favoriteCommit.commit.message}
-                  authorName={favoriteCommit.commit.author.name}
-                  isFavorite={true}
-                  onToggleFavorite={toggleFavorite}
-                  owner={owner}
-                  repo={repo}
-                  sha={favoriteCommit.sha}
-                  date={favoriteCommit.commit.author.date}
-                />
-              ) : null;
-            })
-          : commits.map((commit) => (
-              <CommitCard
-                key={commit.sha}
-                commitMessage={commit.commit.message}
-                authorName={commit.commit.author.name}
-                isFavorite={favorites.some(
-                  (fav) =>
-                    fav.sha === commit.sha &&
-                    fav.owner === owner &&
-                    fav.repo === repo
-                )}
-                onToggleFavorite={toggleFavorite}
-                owner={owner}
-                repo={repo}
-                sha={commit.sha}
-                date={commit.commit.author.date}
-              />
-            ))}
-      </ul>
+      {isLoading ? (
+        <div className="spinner-container">
+          <ClipLoader color="#3939a5" loading={isLoading} size={50} />
+        </div>
+      ) : (
+        <div>
+          {showAllFavorites && allFavoriteCommits.length === 0 && (
+            <p>You have no favorite commits</p>
+          )}
+          {showFavorites && favorites.length === 0 && (
+            <p>
+              No favorite commits for this repository. ({owner}-{repo})
+            </p>
+          )}
+          <ul className="commit-list">
+            {showAllFavorites
+              ? allFavoriteCommits.map((commit) => (
+                  <CommitCard
+                    key={commit.sha}
+                    commitMessage={commit.commitMessage}
+                    authorName={commit.authorName}
+                    isFavorite={true}
+                    onToggleFavorite={toggleFavorite}
+                    owner={owner}
+                    repo={repo}
+                    sha={commit.sha}
+                    date={commit.date}
+                  />
+                ))
+              : showFavorites
+              ? favorites.map(({ sha }) => {
+                  const favoriteCommit = commits.find(
+                    (commit) => commit.sha === sha
+                  );
+                  return favoriteCommit ? (
+                    <CommitCard
+                      key={favoriteCommit.sha}
+                      commitMessage={favoriteCommit.commit.message}
+                      authorName={favoriteCommit.commit.author.name}
+                      isFavorite={true}
+                      onToggleFavorite={toggleFavorite}
+                      owner={owner}
+                      repo={repo}
+                      sha={favoriteCommit.sha}
+                      date={favoriteCommit.commit.author.date}
+                    />
+                  ) : null;
+                })
+              : commits.map((commit) => (
+                  <CommitCard
+                    key={commit.sha}
+                    commitMessage={commit.commit.message}
+                    authorName={commit.commit.author.name}
+                    isFavorite={favorites.some(
+                      (fav) =>
+                        fav.sha === commit.sha &&
+                        fav.owner === owner &&
+                        fav.repo === repo
+                    )}
+                    onToggleFavorite={toggleFavorite}
+                    owner={owner}
+                    repo={repo}
+                    sha={commit.sha}
+                    date={commit.commit.author.date}
+                  />
+                ))}
+          </ul>
+        </div>
+      )}
 
       <SearchModal
         isOpen={isModalOpen}

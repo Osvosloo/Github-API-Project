@@ -13,33 +13,42 @@ export interface User {
 }
 
 export interface GitHubCommit {
-  sha: string; // The SHA of the commit
+  sha: string;
   commit: {
     author: {
-      name: string; // The name of the author
-      email: string; // The email of the author
-      date: string; // The date of the commit
+      name: string;
+      email: string;
+      date: string;
     };
     committer: {
-      name: string; // The name of the committer
-      email: string; // The email of the committer
-      date: string; // The date of the commit
+      name: string;
+      email: string;
+      date: string;
     };
-    message: string; // The commit message
+    message: string;
     tree: {
-      sha: string; // The SHA of the tree object
-      url: string; // The URL of the tree object
+      sha: string;
+      url: string;
     };
-    url: string; // The URL of the commit
-    comment_count: number; // The number of comments on the commit
+    url: string;
+    comment_count: number;
     verification: {
-      verified: boolean; // Whether the commit was verified
-      reason: string; // The reason for verification
-      signature: string | null; // The signature, if available
-      payload: string | null; // The payload, if available
+      verified: boolean;
+      reason: string;
+      signature: string | null;
+      payload: string | null;
     };
   };
-  url: string; // The URL of the commit
-  html_url: string; // The HTML URL of the commit
-  comments_url: string; // The URL for the comments on the commit
+  url: string;
+  html_url: string;
+  comments_url: string;
+}
+
+export interface favorite {
+  owner: string;
+  repo: string;
+  sha: string;
+  commitMessage: string;
+  authorName: string;
+  date: string;
 }
