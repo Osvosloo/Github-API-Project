@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faMagnifyingGlass,
   faStar as solidStar,
+  faTrash
 } from "@fortawesome/free-solid-svg-icons";
 import "../styles/repoFetcher.css";
 import { ClipLoader } from "react-spinners";
@@ -30,6 +31,7 @@ const GitHubRepoFetcher: React.FC = () => {
         const parsedFavorites = JSON.parse(storedFavorites);
         if (Array.isArray(parsedFavorites)) {
           setFavorites(parsedFavorites);
+          console.log(parsedFavorites)
         } else {
           console.warn("Favorites is not an array, resetting to empty.");
           setFavorites([]);
@@ -47,6 +49,15 @@ const GitHubRepoFetcher: React.FC = () => {
 //     console.log(`saving favorites: ${favorites}`);
 //     localStorage.setItem("favorites", JSON.stringify(favorites));
 //   };
+
+const deleteAllFavorites = async () =>{ 
+    setShowAllFavorites(false);
+    // setShowAllFavorites(true);
+    setShowFavorites(false);
+    setFavorites([])
+    localStorage.setItem("favorites", JSON.stringify([]))
+    alert("All favorites have been deleted")
+}
 
   const fetchCommits = async () => {
     if (!owner || !repo) {
@@ -100,19 +111,20 @@ const GitHubRepoFetcher: React.FC = () => {
         (favorite) =>
           favorite.sha === sha 
       );
-
+      let updatedFavorites;
       if (existingFavorite) {
-        return prevFavorites.filter(
-          (favorite) =>
-            !(
-              favorite.sha === sha  )
+        updatedFavorites = prevFavorites.filter(
+          (favorite) => !(favorite.sha === sha)
         );
       } else {
-        return [
-            ...prevFavorites,
-            { owner, repo, sha, commitMessage: "", authorName: "", date: "", url:"" },
-          ];
+        updatedFavorites = [
+          ...prevFavorites,
+          { owner, repo, sha, commitMessage: "", authorName: "", date: "", url: "" },
+        ];
       }
+  
+      localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+      return updatedFavorites;
     });
   };
 
@@ -203,6 +215,10 @@ const GitHubRepoFetcher: React.FC = () => {
           <FontAwesomeIcon icon={solidStar} />
           {showAllFavorites ? " Hide All Favorites" : " Show All Favorites"}
         </button>
+        <button onClick={deleteAllFavorites}>
+          <FontAwesomeIcon icon={faTrash} />
+         {" Delete all favorites"}
+        </button>
       </div>
       {error && <p style={{ color: "red" }}>{error}</p>}
 
@@ -241,11 +257,6 @@ const GitHubRepoFetcher: React.FC = () => {
                 const filteredFavorites = favorites.filter(
                   (favorite) => favorite.owner === owner && favorite.repo === repo
                 );
-
-                // Check if there are favorites for specific repo
-                if (filteredFavorites.length === 0) {
-                  return <p>No favorite commits for this repository. ({owner}-{repo})</p>;
-                }
 
                 return filteredFavorites.map(({ sha }) => {
                   const favoriteCommit = commits.find((commit) => commit.sha === sha);
