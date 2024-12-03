@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -12,12 +12,19 @@ const SearchModal: React.FC<SearchModalProps> = ({
   onSearch,
 }) => {
   const [searchTerm, setSearchTerm] = useState<string>("");
-
+const inputRef = useRef<HTMLInputElement | null>(null)
   const handleSearch = () => {
     onSearch(searchTerm);
     onClose();
     setSearchTerm("");
   };
+
+  useEffect(() => {
+if (isOpen && inputRef.current){
+    inputRef.current.focus()
+}
+}, [isOpen])
+
 
   if (!isOpen) return null;
 
@@ -33,6 +40,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
           placeholder="Enter commit message"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+        ref={inputRef}
         />
         <button onClick={handleSearch}>Search</button>
       </div>

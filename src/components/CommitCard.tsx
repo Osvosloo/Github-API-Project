@@ -14,6 +14,7 @@ interface CommitCardProps {
   repo: string;
   sha: string;
   date: string;
+  url: string;
 }
 
 const CommitCard: React.FC<CommitCardProps> = ({
@@ -25,6 +26,7 @@ const CommitCard: React.FC<CommitCardProps> = ({
   repo,
   sha,
   date,
+  url
 }) => {
   return (
     <li className="commit-card">
@@ -43,7 +45,7 @@ const CommitCard: React.FC<CommitCardProps> = ({
           />
         </div>
         <a
-          href={`https://github.com/${owner}/${repo}/commit/${sha}`}
+          href={url}
           target="_blank"
           rel="noopener noreferrer"
           style={{ color: "black" }}

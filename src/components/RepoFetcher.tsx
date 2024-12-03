@@ -18,7 +18,7 @@ const GitHubRepoFetcher: React.FC = () => {
   const [commits, setCommits] = useState<GitHubCommit[]>([]);
   const [error, setError] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [favorites, setFavorites] = useState<favorite[]>([]); // Use any for now, can be refined later
+  const [favorites, setFavorites] = useState<favorite[]>([]); 
   const [showFavorites, setShowFavorites] = useState<boolean>(false);
   const [showAllFavorites, setShowAllFavorites] = useState<boolean>(false);
   const [allFavoriteCommits, setAllFavoriteCommits] = useState<favorite[]>([]);
@@ -43,10 +43,10 @@ const GitHubRepoFetcher: React.FC = () => {
     }
   }, []);
 
-  const saveFavorites = async () => {
-    console.log(`saving favorites: ${favorites}`);
-    localStorage.setItem("favorites", JSON.stringify(favorites));
-  };
+//   const saveFavorites = async () => {
+//     console.log(`saving favorites: ${favorites}`);
+//     localStorage.setItem("favorites", JSON.stringify(favorites));
+//   };
 
   const fetchCommits = async () => {
     if (!owner || !repo) {
@@ -64,7 +64,9 @@ const GitHubRepoFetcher: React.FC = () => {
           `https://api.github.com/repos/${owner}/${repo}/commits`
         );
         setCommits(response.data);
+        console.log("commits", JSON.stringify(response.data))
       }
+      
     } catch (err) {
       alert(`error: ${err}`);
       setError(`error: ${err}`);
@@ -97,29 +99,21 @@ const GitHubRepoFetcher: React.FC = () => {
       const existingFavorite = prevFavorites.find(
         (favorite) =>
           favorite.sha === sha 
-        //   &&
-        //   favorite.owner === owner &&
-        //   favorite.repo === repo
       );
 
       if (existingFavorite) {
         return prevFavorites.filter(
           (favorite) =>
             !(
-              favorite.sha === sha 
-            //   &&
-            //   favorite.owner === owner &&
-            //   favorite.repo === repo
-            )
+              favorite.sha === sha  )
         );
       } else {
         return [
-          ...prevFavorites,
-          { owner, repo, sha, commitMessage: "", authorName: "", date: "" },
-        ];
+            ...prevFavorites,
+            { owner, repo, sha, commitMessage: "", authorName: "", date: "", url:"" },
+          ];
       }
     });
-    saveFavorites();
   };
 
   const toggleShowFavorites = () => {
@@ -144,7 +138,7 @@ const GitHubRepoFetcher: React.FC = () => {
           const response = await axios.get(
             `https://api.github.com/repos/${owner}/${repo}/commits/${sha}`
           );
-          const { commit } = response.data;
+          const { commit, html_url } = response.data;
           allCommits.push({
             sha,
             owner: owner,
@@ -152,6 +146,7 @@ const GitHubRepoFetcher: React.FC = () => {
             commitMessage: commit.message,
             authorName: commit.author.name,
             date: commit.author.date,
+            url: html_url
           });
           console.log("Show all commits: ", JSON.stringify(allCommits))
         } catch (err) {
@@ -238,13 +233,22 @@ const GitHubRepoFetcher: React.FC = () => {
                     repo={commit.repo}
                     sha={commit.sha}
                     date={commit.date}
+                    url={commit.url}
                   />
                 ))
-              : showFavorites
-              ? favorites.map(({ sha }) => {
-                  const favoriteCommit = commits.find(
-                    (commit) => commit.sha === sha
-                  );
+              : showFavorites //for specific repo
+              ? (() => {
+                const filteredFavorites = favorites.filter(
+                  (favorite) => favorite.owner === owner && favorite.repo === repo
+                );
+
+                // Check if there are favorites for specific repo
+                if (filteredFavorites.length === 0) {
+                  return <p>No favorite commits for this repository. ({owner}-{repo})</p>;
+                }
+
+                return filteredFavorites.map(({ sha }) => {
+                  const favoriteCommit = commits.find((commit) => commit.sha === sha);
                   return favoriteCommit ? (
                     <CommitCard
                       key={favoriteCommit.sha}
@@ -256,10 +260,12 @@ const GitHubRepoFetcher: React.FC = () => {
                       repo={repo}
                       sha={favoriteCommit.sha}
                       date={favoriteCommit.commit.author.date}
+                      url={favoriteCommit.html_url}
                     />
                   ) : null;
-                })
-              : commits.map((commit) => (
+                });
+              })()
+              : commits ? commits.map((commit) => ( //commits that were fetched from github-api
                   <CommitCard
                     key={commit.sha}
                     commitMessage={commit.commit.message}
@@ -275,8 +281,9 @@ const GitHubRepoFetcher: React.FC = () => {
                     repo={repo}
                     sha={commit.sha}
                     date={commit.commit.author.date}
+                    url={commit.html_url}
                   />
-                ))}
+                )) : `No commits found`}
           </ul>
         </div>
       )}
