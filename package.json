@@ -2,7 +2,7 @@
   "homepage": "https://osvosloo.github.io/github-api-project",
   "name": "github-api-project",
   "private": true,
-  "version": "1.4.0",
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
     "predeploy": "npm run build",

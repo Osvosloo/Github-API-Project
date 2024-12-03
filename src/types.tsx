@@ -39,9 +39,7 @@ export interface GitHubCommit {
       payload: string | null;
     };
   };
-//   url: string;
   html_url: string;
-//   comments_url: string;
 }
 
 export interface favorite {

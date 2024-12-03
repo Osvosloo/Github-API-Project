@@ -23,6 +23,7 @@ const GitHubRepoFetcher: React.FC = () => {
   const [showFavorites, setShowFavorites] = useState<boolean>(false);
   const [showAllFavorites, setShowAllFavorites] = useState<boolean>(false);
   const [allFavoriteCommits, setAllFavoriteCommits] = useState<favorite[]>([]);
+ const [showRepoFavButton, setShowRepoFavButton] = useState<boolean>(false);
 
   useEffect(() => {
     const storedFavorites = localStorage.getItem("favorites");
@@ -64,6 +65,7 @@ const deleteAllFavorites = async () =>{
       alert("Fill in both inputs");
       return;
     }
+    setShowRepoFavButton(true);
     setCommits([]);
     setError("");
     setShowFavorites(false);
@@ -201,16 +203,19 @@ const deleteAllFavorites = async () =>{
 
       <div className="button-container">
         <button onClick={fetchCommits}>Fetch Commits</button>
-        <button
-          onClick={openModal}
-          style={{ display: "flex", alignItems: "center" }}
-        >
-          <FontAwesomeIcon icon={faMagnifyingGlass} />
-        </button>
+       
+        {showRepoFavButton ?
+         <button
+         onClick={openModal}
+         style={{ display: "flex", alignItems: "center" }}
+       >
+         <FontAwesomeIcon icon={faMagnifyingGlass} />
+       </button> : null}
+        {owner && repo && showRepoFavButton ?
         <button onClick={toggleShowFavorites}>
           <FontAwesomeIcon icon={solidStar} />
           {showFavorites ? " Hide Repo Favorites" : " Show Repo Favorites"}
-        </button>
+        </button> : null}
         <button onClick={toggleShowAllFavorites}>
           <FontAwesomeIcon icon={solidStar} />
           {showAllFavorites ? " Hide All Favorites" : " Show All Favorites"}
@@ -264,10 +269,10 @@ const deleteAllFavorites = async () =>{
                     <CommitCard
                       key={favoriteCommit.sha}
                       commitMessage={favoriteCommit.commit.message}
-                      authorName={favoriteCommit.commit.author.name}
+                      authorName={favoriteCommit.commit.committer.name}
                       isFavorite={true}
                       onToggleFavorite={toggleFavorite}
-                      owner={owner}
+                      owner={favoriteCommit.commit.author.name}
                       repo={repo}
                       sha={favoriteCommit.sha}
                       date={favoriteCommit.commit.author.date}
@@ -280,7 +285,7 @@ const deleteAllFavorites = async () =>{
                   <CommitCard
                     key={commit.sha}
                     commitMessage={commit.commit.message}
-                    authorName={commit.commit.author.name}
+                    authorName={commit.commit.committer.name}
                     isFavorite={favorites.some(
                       (fav) =>
                         fav.sha === commit.sha &&
@@ -288,7 +293,7 @@ const deleteAllFavorites = async () =>{
                         fav.repo === repo
                     )}
                     onToggleFavorite={toggleFavorite}
-                    owner={owner}
+                    owner={commit.commit.author.name}
                     repo={repo}
                     sha={commit.sha}
                     date={commit.commit.author.date}
