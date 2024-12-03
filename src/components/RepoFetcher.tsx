@@ -96,18 +96,20 @@ const GitHubRepoFetcher: React.FC = () => {
     setFavorites((prevFavorites) => {
       const existingFavorite = prevFavorites.find(
         (favorite) =>
-          favorite.sha === sha &&
-          favorite.owner === owner &&
-          favorite.repo === repo
+          favorite.sha === sha 
+        //   &&
+        //   favorite.owner === owner &&
+        //   favorite.repo === repo
       );
 
       if (existingFavorite) {
         return prevFavorites.filter(
           (favorite) =>
             !(
-              favorite.sha === sha &&
-              favorite.owner === owner &&
-              favorite.repo === repo
+              favorite.sha === sha 
+            //   &&
+            //   favorite.owner === owner &&
+            //   favorite.repo === repo
             )
         );
       } else {
@@ -124,11 +126,10 @@ const GitHubRepoFetcher: React.FC = () => {
     console.log(favorites);
     if (!owner || !repo) {
       alert("Please fill in both inputs");
+      return;
     }
     setShowAllFavorites(false);
-    if (owner && repo) {
-      setShowFavorites((prev) => !prev);
-    }
+      setShowFavorites((prev) => !prev)
   };
 
   const fetchAllFavoriteCommits = async () => {
@@ -152,6 +153,7 @@ const GitHubRepoFetcher: React.FC = () => {
             authorName: commit.author.name,
             date: commit.author.date,
           });
+          console.log("Show all commits: ", JSON.stringify(allCommits))
         } catch (err) {
           alert(err);
           console.error(`Failed to fetch commit with SHA: ${sha}`, err);
@@ -232,8 +234,8 @@ const GitHubRepoFetcher: React.FC = () => {
                     authorName={commit.authorName}
                     isFavorite={true}
                     onToggleFavorite={toggleFavorite}
-                    owner={owner}
-                    repo={repo}
+                    owner={commit.owner}
+                    repo={commit.repo}
                     sha={commit.sha}
                     date={commit.date}
                   />

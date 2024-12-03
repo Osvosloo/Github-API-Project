@@ -51,6 +51,8 @@ const CommitCard: React.FC<CommitCardProps> = ({
           <strong style={{ marginRight: "70px" }}>{commitMessage}</strong>
         </a>
         <p className="commit-author">By: {authorName}</p>
+        <p className="commit-author">Owner: {owner}</p>
+        <p className="commit-author">Repo: {repo}</p>
         <p className="commit-date">Date: {new Date(date).toLocaleString()}</p>
       </div>
     </li>
